@@ -125,6 +125,9 @@ class Cart extends Model{
       if ($totals['vllength'] < 16){
         $totals['vllength'] = 16;
       }
+      if ($totals['vlwidth'] < 11){
+        $totals['vlwidth'] = 11;
+      }
 
       $qs = http_build_query([
         'nCdEmpresa'=>'',
