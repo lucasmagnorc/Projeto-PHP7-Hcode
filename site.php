@@ -106,7 +106,9 @@ $app->get("/checkout", function(){
 $app->get("/login", function(){
 	$page = new Page();
 	$page->setTpl('login', [
-		'error'=>User::getError()
+		'error'=>User::getError(),
+		'errorRegister'=>User::getErrorRegister(),
+		'registerValues'=>(isset($_SESSION['registerValues'])) ? $_SESSION['registerValues'] : ['name'=>'', 'email'=>'', 'phone'=>'']
 	]);
 });
 
@@ -123,6 +125,53 @@ $app->post("/login", function(){
 $app->get("/logout", function(){
 	User::logout();
 	header("Location: /Projeto-PHP7-Hcode/index.php/login");
+	exit;
+});
+
+$app->post('/register', function(){
+	$_SESSION['registerValues'] = $_POST;
+	if (!isset($_POST['name']) || $_POST['name'] == '') {
+		User::setErrorRegister("Preencha o seu nome");
+		header("Location: /Projeto-PHP7-Hcode/index.php/login");
+		exit;
+	}
+	
+	if (!isset($_POST['email']) || $_POST['email'] == '') {
+		User::setErrorRegister("Preencha o seu email");
+		header("Location: /Projeto-PHP7-Hcode/index.php/login");
+		exit;
+	}
+	
+	if (!isset($_POST['phone']) || $_POST['phone'] == '') {
+		User::setErrorRegister("Preencha o telefone");
+		header("Location: /Projeto-PHP7-Hcode/index.php/login");
+		exit;
+	}
+	
+	if (!isset($_POST['password']) || $_POST['password'] == '') {
+		User::setErrorRegister("Preencha a senha");
+		header("Location: /Projeto-PHP7-Hcode/index.php/login");
+		exit;
+	}
+
+	if(User::checkLoginExist($_POST['email']) === true){
+		User::setErrorRegister("Este endereço de email jea está sendo utilizado.");
+		header("Location: /Projeto-PHP7-Hcode/index.php/login");
+		exit;
+	}
+
+	$user = new User();
+	$user->setData([
+		'inadmin'=>0,
+		'deslogin'=>$_POST['email'],
+		'desperson'=>$_POST['name'],
+		'desemail'=>$_POST['email'],
+		'despassword'=>$_POST['password'],
+		'nrphone'=>$_POST['phone']
+	]);
+	$user->save();
+	User::login($_POST['email'], $_POST['password']);
+	header('Location: /Projeto-PHP7-Hcode/index.php/checkout');
 	exit;
 });
 
