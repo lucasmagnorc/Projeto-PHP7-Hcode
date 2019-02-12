@@ -11,6 +11,7 @@ class User extends Model{
   const SECRET_IV = "HcodePhp_banana1";
   const ERROR = "UserError";
   const ERROR_REGISTER = "UserErrorRegister";
+  const SUCCESS = "UserSuccess";
 
   public static function getFromSession(){
     if(isset($_SESSION[User::SESSION]) && (int)$_SESSION[User::SESSION]['iduser'] > 0){
@@ -235,6 +236,20 @@ class User extends Model{
       ':deslogin'=>$login
     ]);
     return (count($results) > 0);
+  }
+
+  public static function getSuccess(){
+    $msg = (isset($_SESSION[User::SUCCESS]) && $_SESSION[User::SUCCESS]) ? $_SESSION[User::SUCCESS] : '';
+    User::clearSuccess();
+    return $msg;
+  }
+
+  public static function clearSuccess(){
+    $_SESSION[User::SUCCESS] = NULL;
+  }
+
+  public static function setSuccess($msg){
+    $_SESSION[User::SUCCESS] = $msg;
   }
 }
 

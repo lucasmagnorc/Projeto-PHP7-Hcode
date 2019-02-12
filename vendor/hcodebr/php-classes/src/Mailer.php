@@ -4,8 +4,8 @@ namespace Hcode;
 use Rain\Tpl;
 
 class Mailer{
-    const USERNAME = 'lucasmagnorc@gmail.com';
-    const PASSWORD = 'lu110000';
+    const USERNAME = 'email@teste.com';
+    const PASSWORD = 'senha';
     const NAME_FROM = "Email de Teste";
     private $mail;
     private $tpl;

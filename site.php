@@ -214,4 +214,52 @@ $app->post('/forgot/reset', function(){
 	$page->setTpl('forgot-reset-success');
 });
 
+$app->get("/profile", function(){
+	User::verifyLogin(false);
+	$user = User::getFromSession();
+	$page = new Page();
+	$page->setTpl("profile",[
+		'user'=>$user->getValues(),
+		'profileMsg'=>User::getSuccess(),
+		'profileError'=>User::getError()
+	]);
+});
+$app->post("/profile", function(){
+	User::verifyLogin(false);
+	if(!isset($_POST['desperson']) || $_POST['desperson'] === ''){
+		User::setError("Preencha o seu nome");
+		header('Location: /Projeto-PHP7-Hcode/index.php/profile');
+		exit;
+	}
+
+	if(!isset($_POST['desemail']) || $_POST['desemail'] === ''){
+		User::setError("Preencha o seu email");
+		header('Location: /Projeto-PHP7-Hcode/index.php/profile');
+		exit;
+	}
+
+	if(!isset($_POST['nrphone']) || $_POST['nrphone'] === ''){
+		User::setError("Preencha o seu telefone");
+		header('Location: /Projeto-PHP7-Hcode/index.php/profile');
+		exit;
+	}
+	
+	$user = User::getFromSession();
+	if($_POST['desemail'] !== $user->getdesemail()){
+		if(User::checkLoginExists($_POST['desemail']) === true){
+			User::setError("Este endereço de email já está cadastrado.");
+		}
+	}
+
+	$_POST['inadmin'] = $user->getinadmin();
+	$_POST['despassword'] = $user->getdespassword();
+	$_POST['deslogin'] = $_POST['desemail'];
+	
+	$user->setData($_POST);
+	$user->update();
+	$_SESSION[User::SESSION] = $user->getValues();
+	User::setSuccess("Dados alterados com sucesso!");
+	header('Location: /Projeto-PHP7-Hcode/index.php/profile');
+	exit;
+});
 ?>
